@@ -1,0 +1,25 @@
+	date: 23.09.2019
+
+###########################################
+<character>:= {a-z}
+<word>:= <character>[<word>]
+<line>:= {<word>,<word> [<line>]}
+<operator>:= {c, cc, cpp, h, p, sh}
+<mkf>:= mkf { ,-<operator> <word> [<line>]}
+###########################################
+
+Operator defines a filetype which will be created.
+Entering mkf without any operators will end up printing
+the mkf info text.
+
+mkf will look for a file that has the name of the filetype
+given as argument in /home/$USER/.template
+
+If a file with the given Name(second argument) does laready exist give out an 
+warining and end execution.
+Name will replace [NAME] placeholder
+
+If a given filetype(first argument, opearator) is not found in .template
+give out error: unknown filetype.
+
+A given comment(third to n'th argument) will replace the [COMMENT] spaceholder
