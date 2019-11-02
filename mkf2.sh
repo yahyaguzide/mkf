@@ -15,11 +15,12 @@ errmsg(){
 
 templatePath="/home/$USER/.templates";
 
-template="";
 filetype="";
 filename="";
 
 comments="";
+# NOTE: the subsitute Comment Character could be used in the Comment!
+cchar_sub="~";
 cchar="";
 
 author="Yahya Guezide";
@@ -27,39 +28,33 @@ date=$(date '+%d.%m.%Y');
 
 if [ -z "$1" ] # if only mkf is entered without arguments print out info file
 then
-	cat mkf-info.txt;
+    # This will get the path of our script so we can Read mkf-info outside of 
+    # directory mkf
+    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+	cat $DIR/mkf-info.txt;
 else
-    # flag to read in arguments
-    _read=0;
+    # flag to read in the filename
+    _readName=0;
     for var in "$@"
     do
-        # read and save agrument
-        [ ! "$_read" -eq "0" ] && case "$_read" in
-			"1")
-				_read=0;
-            	template=$var;
-            	continue;;
-			"2")
-				_read=0;
-				filename=$var;
-				continue;;
-			#*)
-			#	_read=0;;
-		esac
+        # read in the filename
+        if [ "$_readName" -eq "1" ]
+        then
+            filename=$var;
+            _readName=0;
+            continue;
+        fi
 
         case $var in 
-        --template)
-			_read=1;;	
         -*)
-            _read=2;
+            _readName=1;
             filetype=$var;
     		filetype=$(echo "$filetype" | sed -e "s/-//");
 
-            # set cchar wich is just one character that indicates 
+            # set cchar wich is just one string that indicates 
             # a commentar, example this is a commentar in bash
             # indicated via # or in c via // 
-            case $filetype in 
-            	"c"|"cc"|"cpp"|"h")
+            case $filetype in "c"|"cc"|"cpp"|"h")
                 cchar="//";;
             "sh"|"py"|*)
                 cchar="#";;
@@ -67,13 +62,23 @@ else
                 cchar=";";;
             esac;;
         *)
-            comments="$comments""$cchar $var\n";;
+            if [ -z "$cchar" ]
+            then
+ #               comments="$comments""$cchar_sub $var\n";
+ #           else
+                comments="$comments""$cchar $var\n";
+            fi
+            ;;
         esac
     done
-    [ ! -z "$comments" ] && comments=$comments$cchar;
+    if [ ! -z "$comments" ] 
+    then 
+        comments=$comments$cchar;
+        # NOTE: the trim operation is not exchanging the whole string but only the first char
+#        comments=$(echo $comments | tr $cchar_sub "$cchar") # change substitued Chars to the right one
+    fi
     _filename=$(echo $filename | tr a-z A-Z) # to uppercase
 
-	[ ! -z $template ] && echo "template:" "$template";
     echo "filetype:" "$filetype";
     echo "filename:" "$filename";
     echo "comments:" "$comments";
@@ -82,11 +87,9 @@ else
     then
         errmsg "No filetype given";
     fi
-    [ "$_error" -eq "0" ] &&    if [ -z "$template" ]
-								then
-    								[ ! -e $templatePath/$filetype ] && errmsg "There is no such Temlpate";
-    							else
-    								[ ! -e  $templatePath/$template ] && errmsg "Template not found";
+    [ "$_error" -eq "0" ] &&    if [ ! -e $templatePath/$filetype ] # look if a template for this fileytpe is in .templates
+                            	then
+                                    errmsg "There is no such Temlpate";
                                 fi
     [ "$_error" -eq "0" ] &&    if [ -z "$filename" ] # no filename was given print out errmsg
                                 then
@@ -99,12 +102,7 @@ else
 
     if [ "$_error" -eq "0" ]
     then
-		if [ -z "$template" ]
-		then
-        	cp $templatePath/$filetype $PWD/$filename.$filetype;
-		else
-			cp $templatePath/$template $PWD/$filename.$filetype;
-		fi
+        cp $templatePath/$filetype $PWD/$filename.$filetype;
         sed -i "s/\[NAME\]/$filename/g" $PWD/$filename.$filetype;
         sed -i "s/\[_NAME\]/$_filename/g" $PWD/$filename.$filetype;
         # because '//' is used in comments sed gets confused and throws

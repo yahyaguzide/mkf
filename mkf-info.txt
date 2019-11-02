@@ -1,1 +1,24 @@
-mkfe info file
+MKF is a Simple Shell script which will create a file for you, that you given a template
+in /home/$USER/.template. 
+
+if no Template was given MKF will echo a errmsg and Warn you, same will hapen if a
+File with the same Name and Filetype already exists.
+
+MKF can be used in the folllowing way
+    ###########################################
+    <character> := {a-z}
+    <word>      := <character>[<word>]
+    <comment>   := {<word>, "<word> [<comment>]"}
+    <comments>  := {<comment>, <comment> [<comments>]}
+    <filetype>  := <word>
+    <name>      := <word>
+    <mkf>       := mkf { i, [<comments>] -<filetype> <name> [<comments>]}
+    ###########################################
+
+    Each "Comment" will be written on a separet Line.
+    
+    example:    
+        mkf "This is a Comment" -c aCfile comments "is a comment too "
+
+    In the latest Version of mkf comments Written earlier than the Filetype and Name
+    will use the Standart Character for a Comment('#')
