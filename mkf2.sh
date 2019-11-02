@@ -62,12 +62,12 @@ else
                 cchar=";";;
             esac;;
         *)
-            if [ -z "$cchar" ]
-            then
- #               comments="$comments""$cchar_sub $var\n";
- #           else
+#            if [ -z "$cchar" ]
+#            then
+#               comments="$comments""$cchar_sub $var\n";
+#           else
                 comments="$comments""$cchar $var\n";
-            fi
+#            fi
             ;;
         esac
     done

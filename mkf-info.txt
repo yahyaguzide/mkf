@@ -12,13 +12,13 @@ MKF can be used in the folllowing way
     <comments>  := {<comment>, <comment> [<comments>]}
     <filetype>  := <word>
     <name>      := <word>
-    <mkf>       := mkf { i, [<comments>] -<filetype> <name> [<comments>]}
+    <mkf>       := mkf { , [<comments>] -<filetype> <name> [<comments>]}
     ###########################################
 
     Each "Comment" will be written on a separet Line.
     
     example:    
-        mkf "This is a Comment" -c aCfile comments "is a comment too "
+        mkf "This is a Comment" -c aCfile comments "is a comment too"
 
     In the latest Version of mkf comments Written earlier than the Filetype and Name
     will use the Standart Character for a Comment('#')
